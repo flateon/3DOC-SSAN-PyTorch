@@ -4,19 +4,17 @@ import torch
 from torch import nn
 
 
-
 class OctConv3d(nn.Module):
     """
         oct_type (str): The type of OctConv you'd like to use. 'first' stand for the the first Octave Convolution.
                         'last' stand for the last Octave Convolution. And 'regular' stand for the regular ones.
     """
 
-    def __init__(self, oct_type: str, in_channels, out_channels, kernel_size: Tuple[int, ...],
-                 stride: Tuple[int, ...] = (1, 1, 1),
-                 padding: Tuple[int, ...] = (2, 1, 1)):
+    def __init__(self, oct_type: str, in_channels, out_channels, kernel_size: Tuple[int, int, int],
+                 stride: Tuple[int, int, int] = (1, 1, 1), padding: Tuple[int, int, int] = (2, 1, 1)):
         super().__init__()
-        if oct_type not in ('first', 'regular', 'last','last_l'):
-            raise UserWarning("Invalid oct_type!")
+        if oct_type not in ('first', 'regular', 'last', 'last_l'):
+            raise ValueError("Invalid oct type!")
         self.oct_type = oct_type
         self.in_channels = in_channels
         self.out_channels = out_channels
@@ -140,7 +138,6 @@ class _3DOC_SSAN(nn.Module):
             OctConv3d(oct_type='last_l', in_channels=24, out_channels=48, kernel_size=(5, 3, 3)),
             nn.BatchNorm3d(48),
             nn.ReLU(),
-            # nn.AvgPool3d(kernel_size=(1, 2, 2), stride=(1, 2, 2), padding=(0, 1, 1)),
             # (Tensor[batch,48,channels,7,7])
             OctConv3d(oct_type='first', in_channels=48, out_channels=24, kernel_size=(5, 3, 3)),
             OctBatchNorm(24),
@@ -152,9 +149,12 @@ class _3DOC_SSAN(nn.Module):
             # Tensor[batch,1,channels,7,7]
         )
         self.Softmax2d = Softmax2d(start_dim=1)
-        self.spa_conv1 = Conv2dBnReLu(in_channels=self.channels, out_channels=self.channels, kernel_size=(3, 3), stride=1, padding=1)
-        self.spa_conv2 = Conv2dBnReLu(in_channels=self.channels, out_channels=self.channels, kernel_size=(1, 1), stride=1, padding=0)
-        self.spe_conv1 = Conv2dBnReLu(in_channels=self.channels, out_channels=self.channels, kernel_size=(1, 1), stride=1, padding=0)
+        self.spa_conv1 = Conv2dBnReLu(in_channels=self.channels, out_channels=self.channels, kernel_size=(3, 3),
+                                      stride=1, padding=1)
+        self.spa_conv2 = Conv2dBnReLu(in_channels=self.channels, out_channels=self.channels, kernel_size=(1, 1),
+                                      stride=1, padding=0)
+        self.spe_conv1 = Conv2dBnReLu(in_channels=self.channels, out_channels=self.channels, kernel_size=(1, 1),
+                                      stride=1, padding=0)
         self.Fc_spa = Fc(mid_feature=1024, out_feature=self.num_classes)
         self.Fc_spe = Fc(mid_feature=1024, out_feature=self.num_classes)
         self.Fc_all = Fc(mid_feature=1024, out_feature=self.num_classes)
@@ -213,6 +213,6 @@ class _3DOC_SSAN(nn.Module):
         t_spa, t_spe, t_all = self.ssicm(x_spa, x_spe)
         return self.Fc_spa(t_spa), self.Fc_spe(t_spe), self.Fc_all(t_all)
 
-    # OctConv3d('first', 1, 24, (5, 3, 3))(torch.randn(10, 1, channels, 13, 13))
+# OctConv3d('first', 1, 24, (5, 3, 3))(torch.randn(10, 1, channels, 13, 13))
 # x = _3DOC_SSAN()(torch.randn(10, 1, 144, 13, 13))
 # print(x)

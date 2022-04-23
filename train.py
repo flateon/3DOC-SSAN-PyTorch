@@ -13,8 +13,8 @@ from dataset import MyDataset
 from model import _3DOC_SSAN
 from test import test_model
 
-CHANNELS = 103  # 144
-NUM_CLASSES = 9  # 15
+CHANNELS = 103  # 144  # 200
+NUM_CLASSES = 9  # 15  # 16
 
 NUM_EPOCHS = 50
 BATCH_SIZE = 16
@@ -33,6 +33,9 @@ def train_(num_epochs, learning_rate, batch_size, lr_decay_rate, decay_steps):
     # model.load_state_dict(torch.load('model.pkl'))
     # model = torch.load('models/3DOC_SSAN_0.998327_10-04_17-42.pth')
     # 定义数据集与数据集加载器
+    # training_dataset = MyDataset('Indian_Pines/train_data.npy', 'Indian_Pines/train_labels.npy')
+    # testing_dataset = MyDataset('Indian_Pines/test_data.npy', 'Indian_Pines/test_labels.npy')
+
     # training_dataset = MyDataset('GRSS2013/train_data.npy', 'GRSS2013/train_labels.npy')
     # testing_dataset = MyDataset('GRSS2013/test_data.npy', 'GRSS2013/test_labels.npy')
 
