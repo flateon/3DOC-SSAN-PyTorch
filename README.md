@@ -11,9 +11,9 @@ conda env create -f environment.yml
 ``
 ## Preprocess dataset
 #### Simple example on Pavia University dataset  
-Download Pavia University dataset and move it to ./Pavia_University/  
+Download Pavia University dataset and move it to ./datasets/Pavia_University/  
 ``
-python ./Pavia_University/up_data_process.py
+python ./datasets/data_process_pavia_university.py
 ``
 ## Training
 ``

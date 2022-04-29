@@ -24,34 +24,36 @@ LR_DECAY_RATE = 0.3333
 
 
 def train_(num_epochs, learning_rate, batch_size, lr_decay_rate, decay_steps):
-    # 定义模型
     model = _3DOC_SSAN(CHANNELS, NUM_CLASSES)
     device = "cuda"
     model.to(device)
     cudnn.benchmark = True
 
-    # model.load_state_dict(torch.load('model.pkl'))
-    # model = torch.load('models/3DOC_SSAN_0.998327_10-04_17-42.pth')
-    # 定义数据集与数据集加载器
-    # training_dataset = MyDataset('Indian_Pines/train_data.npy', 'Indian_Pines/train_labels.npy')
-    # testing_dataset = MyDataset('Indian_Pines/test_data.npy', 'Indian_Pines/test_labels.npy')
+    # training_dataset = MyDataset('./datasets/Indian_Pines/train_data.npy',
+    #                              './datasets/Indian_Pines/train_labels.npy')
+    # testing_dataset = MyDataset('./datasets/Indian_Pines/test_data.npy',
+    #                             './datasets/Indian_Pines/test_labels.npy')
 
-    # training_dataset = MyDataset('GRSS2013/train_data.npy', 'GRSS2013/train_labels.npy')
-    # testing_dataset = MyDataset('GRSS2013/test_data.npy', 'GRSS2013/test_labels.npy')
+    # training_dataset = MyDataset('./datasets/Houston/train_data.npy',
+    #                              './datasets/Houston/train_labels.npy')
+    # testing_dataset = MyDataset('./datasets/Houston/test_data.npy',
+    #                             './datasets/Houston/test_labels.npy')
 
-    training_dataset = MyDataset('Pavia_University/data_train.npy', 'Pavia_University/labels_train.npy')
-    testing_dataset = MyDataset('Pavia_University/data_test.npy', 'Pavia_University/labels_test.npy')
+    training_dataset = MyDataset('./datasets/Pavia_University/data_train.npy',
+                                 './datasets/Pavia_University/labels_train.npy')
+    testing_dataset = MyDataset('./datasets/Pavia_University/data_test.npy',
+                                './datasets/Pavia_University/labels_test.npy')
 
     valid_size = int(0.2 * len(testing_dataset))
     validation_dataset, _ = random_split(testing_dataset, (valid_size, len(testing_dataset) - valid_size))
     training_dataloader = DataLoader(training_dataset, batch_size, shuffle=True, pin_memory=True)
     validation_dataloader = DataLoader(validation_dataset, batch_size=80, pin_memory=True)
-    # 定义损失函数,优化算法及学习率调度器
+
     criticizer = nn.CrossEntropyLoss()
     optimizer = torch.optim.AdamW(model.parameters(), lr=learning_rate)
     scheduler = lr_scheduler.StepLR(optimizer, step_size=decay_steps, gamma=lr_decay_rate)
     writer = SummaryWriter(f'./runs/3DOC_SSAN{datetime.now().strftime("%m-%d_%H-%M")}')
-    # 训练模型
+
     accuracy = [0, ]
     for epoch in range(num_epochs):
         model.train()
@@ -60,7 +62,7 @@ def train_(num_epochs, learning_rate, batch_size, lr_decay_rate, decay_steps):
             images, labels = images.to(device), labels.to(device)
             t_spa, t_spe, t_all = model(images)
             correct = (t_all.argmax(1) == labels).sum().item()
-            loss = criticizer(t_all, labels)# + criticizer(t_spa, labels) + criticizer(t_spe, labels)
+            loss = criticizer(t_all, labels)  # + criticizer(t_spa, labels) + criticizer(t_spe, labels)
             # 反向传播
             optimizer.zero_grad()
             loss.backward()
@@ -76,11 +78,11 @@ def train_(num_epochs, learning_rate, batch_size, lr_decay_rate, decay_steps):
             # if i % 10 == 0:
             #     tqdm.write(f'Epoch:{epoch}, [{i * batch_size:^8}/{len(training_dataset):^8}] ,loss:{loss.item():.6f}')
         scheduler.step()
-        # 验证模型在验证集上的精度
+
         current_acc = test_model(model, validation_dataloader)
         writer.add_scalar('Validation acc', current_acc, epoch)
         tqdm.write(f'Epoch:{epoch}  Validation_Acc={current_acc * 100:.4f}%')
-        # 保存精度提升的模型
+
         if current_acc > max(accuracy):
             torch.save(model.state_dict(), f"model.pkl")
             tqdm.write("save model")
