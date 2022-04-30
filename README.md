@@ -1,17 +1,18 @@
 # 3DOC-SSAN-PyTorch
-PyTorch implementation of paper [Hyperspectral Image Classification Based on 3-D
+Unofficial PyTorch implementation of paper [Hyperspectral Image Classification Based on 3-D
 Octave Convolution With Spatial–Spectral
 Attention Network](https://ieeexplore.ieee.org/document/9140029)
-<img src="./Flowchart_of_3DOC_SSAN.png"/>
+<img src="./Flowchart_of_3DOC_SSAN.png"/>   
 
 ## Requirements  
 To install requirements  
-``
+``  
 conda env create -f environment.yml
 ``
 ## Preprocess dataset
 #### Simple example on Pavia University dataset  
-Download Pavia University dataset and move it to ./datasets/Pavia_University/  
+* Download Pavia University dataset and move it to ./datasets/Pavia_University/  
+* Run data processing  
 ``
 python ./datasets/data_process_pavia_university.py
 ``
