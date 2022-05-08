@@ -6,20 +6,20 @@ Attention Network](https://ieeexplore.ieee.org/document/9140029)
 
 ## Requirements  
 To install requirements  
-``  
+```bash
 conda env create -f environment.yml
-``
+```
 ## Preprocess dataset
 #### Simple example on Pavia University dataset  
 * Download Pavia University dataset and move it to ./datasets/Pavia_University/  
 * Run data processing  
-``
+```bash
 python ./datasets/data_process_pavia_university.py
-``
+```
 ## Training
-``
+```bash
 python ./train.py
-``
+```
 ## Result
 ### Result in Pavia University Dataset
 |  Metric  | Reported      | Our Implementation |
